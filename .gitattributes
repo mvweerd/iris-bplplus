@@ -1,0 +1,9 @@
+# Class definitions are loaded into IRIS, which runs on Linux. CRLF from a
+# Windows checkout corrupts them, so pin LF regardless of platform.
+*.cls text eol=lf
+*.xml text eol=lf
+*.cpf text eol=lf
+# The Docker demo runs these inside a Linux container.
+*.script text eol=lf
+*.py text eol=lf
+Dockerfile text eol=lf

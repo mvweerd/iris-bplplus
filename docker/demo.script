@@ -1,0 +1,10 @@
+zn "%SYS"
+do ##class(Security.Users).UnExpireUserPasswords("*")
+set app("AutheEnabled")=96  write "interop-editors password login: ",##class(Security.Applications).Modify("/api/interop-editors",.app),!
+write "interop: ",##class(%Library.EnsembleMgr).EnableNamespace("USER",1),!
+zn "USER"
+zpm "load /home/irisowner/bplplus"
+do $system.OBJ.ImportDir("/home/irisowner/bplplus/tests/app","*.cls","ck",.err,1)
+write "demo classes: ",$data(^oddCOM("test.app.bplplus.demo.production")),!
+do ##class(Ens.Director).SetAutoStart("test.app.bplplus.demo.production")
+halt

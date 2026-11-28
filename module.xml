@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26">
+<Document name="iris-bplplus.ZPM">
+<Module>
+  <Name>iris-bplplus</Name>
+  <Version>1.0.0</Version>
+  <Description>Custom activities for the BPL Business Process Designer: write an activity as one class with its parameters as properties, and pick it from the designer's Add Activity menu with an input field per parameter.</Description>
+  <Keywords>bpl,interoperability,business process,designer,custom activities,python</Keywords>
+  <Author>
+    <Person>Maarten van Weerd</Person>
+  </Author>
+  <Packaging>module</Packaging>
+
+  <!--
+    Global scope: install the classes wherever app.bplplus already resolves, and
+    never add a package mapping of our own. Without it, IPM can add a narrower
+    app.bplplus mapping to the installing namespace that silently overrides a
+    shared one.
+
+    The cost is on removal: zpm "uninstall iris-bplplus -global".
+  -->
+  <GlobalScope>true</GlobalScope>
+
+  <!--
+    One resource per class, never the package: a package resource would also
+    compile, and on uninstall delete, activities of your own in app.bplplus.
+
+      Shared by both editors (app.bplplus):
+        app.bplplus.activity                    - base class of every custom activity
+        app.bplplus.activityResult              - result of an activity (Success, ResultText)
+        app.bplplus.python.activity              - base class of an activity written in Python
+        app.bplplus.python.step                  - runs an activity written as a plain Python class (src/python)
+        app.bplplus.python.stepResult            - its result: the Python class's results, by name
+        app.bplplus.lookup                      - parameter type with a magnifier: a context search of the portal, as settings have
+        app.bplplus.catalog                     - lists the activities of a namespace for both editors
+        app.bplplus.editorCore                  - the JavaScript both editors share: the code format of an activity and its form
+        app.bplplus.examples.buildSqlInsert     - example activity: quoted, checked SQL INSERT statements from XML records
+        app.bplplus.examples.buildSqlInsertResult - its result: the statements and their number
+        app.bplplus.examples.checkResponse      - example activity: fail when a value in an XML response is not the expected one
+        app.bplplus.examples.checkResponseResult - its result: the value found
+        app.bplplus.examples.fuzzyMatch         - example activity in Python: the candidate most like a value (difflib)
+        app.bplplus.examples.fuzzyMatchResult   - its result: the best match and its score
+        app.bplplus.examples.normalizePhone     - example activity: a phone number in international form, the twin of the Python one
+        app.bplplus.examples.normalizePhoneResult - its result: the number in E.164
+        app.bplplus.examples.handleError        - example activity for a catchall: fail with the error or log it as a warning, optionally with an alert
+        app.bplplus.examples.sendNotification   - example activity: notification to the Event Log
+        app.bplplus.examples.validateValue      - example activity: regular expression check
+      Calling another BPL process with the context (app.bplplus.call):
+        app.bplplus.call.callProcess            - activity: runs a BPL process in this one, with Aux (by default the context) as its request, by reference
+        app.bplplus.call.search                 - the context search behind the magnifier of Call process's Target
+        app.bplplus.examples.cleanContact       - example process that Call process calls: cleans up the contact it gets as its request
+        app.bplplus.examples.registerContact    - example process that has cleanContact clean up its context.contact with Call process
+        app.bplplus.examples.contact            - the contact the two example processes share
+        app.bplplus.examples.signLetter         - example process that Call process calls with a stream: signs the letter it gets as its request
+        app.bplplus.examples.writeLetter        - example process that has signLetter sign its context.letter, a stream, with Call process
+      The classic (Zen) Business Process Designer (app.bplplus.classic):
+        app.bplplus.classic.editor              - the designer page with custom activities
+        app.bplplus.classic.redirect            - web application event class that makes that page the default designer
+      The new (Angular) BPL editor (app.bplplus.angular):
+        app.bplplus.angular.editor              - serves the new editor with custom activities at /ui/interop/bpl-plus
+  -->
+  <Resource Name="app.bplplus.activity.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.activityResult.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.python.activity.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.python.step.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.python.stepResult.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.lookup.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.catalog.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.editorCore.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.classic.editor.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.classic.redirect.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.angular.editor.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.buildSqlInsert.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.buildSqlInsertResult.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.checkResponse.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.checkResponseResult.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.fuzzyMatch.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.fuzzyMatchResult.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.handleError.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.normalizePhone.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.normalizePhoneResult.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.sendNotification.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.validateValue.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.call.callProcess.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.call.search.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.contact.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.cleanContact.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.registerContact.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.signLetter.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.writeLetter.CLS" Directory="src/cls"/>
+
+  <!--
+    The Python side of activities written as plain Python classes: the
+    framework (bplplus) and the example activities (bplplus_steps), in the
+    python directory of the installation, which Embedded Python searches.
+  -->
+  <FileCopy Name="src/python/bplplus/" Target="${mgrdir}python/bplplus/"/>
+  <FileCopy Name="src/python/bplplus_steps/" Target="${mgrdir}python/bplplus_steps/"/>
+
+  <!--
+    The classic designer page needs no web application of its own: it is a Zen
+    page served by the namespace's default CSP application (/csp/<namespace>),
+    with the same %Ens_BPL resources as the standard designer.
+
+    /ui/interop/bpl-plus serves the new BPL editor with custom activities. It
+    sits under /ui/interop because the editor finds its server by cutting its
+    own URL off at "/ui/interop". Its login:
+      - Unauthenticated (64) for the editor's own files and the script, which
+        are the same files /ui/interop serves to anyone already;
+      - Password (32) in the Management Portal's group (%ISCMgtPortal), so the
+        portal login carries over and the activity catalog, which only a
+        logged-in user with %Ens_BPL:READ gets, needs no second login. The
+        editor's own JWT cannot be used: IRIS binds it to /api/interop-editors.
+    One namespace per instance can own the path; its catalog serves every
+    namespace that has these classes.
+  -->
+  <WebApplication
+    Name="/ui/interop/bpl-plus"
+    Description="New BPL editor with custom activities (iris-bplplus)"
+    AutheEnabled="96"
+    GroupById="%ISCMgtPortal"
+    DispatchClass="app.bplplus.angular.editor"
+  />
+
+  <!--
+    The one piece of configuration the module does itself, an exception to
+    keeping setup in the README: app.bplplus.classic.redirect as Event Class of the
+    namespace's default web application (/csp/<namespace>), so the portal opens
+    the designer with custom activities. Only when that application has no Event
+    Class yet; one that is set stays as it is, and the install says how to add
+    the redirect to it. On uninstall it is cleared again, only when it is still
+    app.bplplus.classic.redirect: that class is deleted, and a web application whose
+    Event Class no longer exists breaks.
+  -->
+  <Invoke Phase="Configure" Class="app.bplplus.classic.redirect" Method="EnableForNamespace">
+    <Arg>${namespace}</Arg>
+  </Invoke>
+  <Invoke Phase="Unconfigure" Class="app.bplplus.classic.redirect" Method="DisableForNamespace">
+    <Arg>${namespace}</Arg>
+  </Invoke>
+
+  <AfterInstallMessage>Custom BPL activities are installed in ${namespace}.
+Open the designer: ${webroot}csp/${namespace}/app.bplplus.classic.editor.zen
+or the new editor: ${webroot}ui/interop/bpl-plus/index.html?$NAMESPACE=${namespace}
+Custom activities run inside the business process: no production item is needed.</AfterInstallMessage>
+
+</Module>
+</Document>
+</Export>

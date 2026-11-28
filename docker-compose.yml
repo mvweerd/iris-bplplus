@@ -1,0 +1,10 @@
+# docker compose up -d --build, then open
+# http://localhost:9092/csp/user/EnsPortal.BPLEditor.zen?BP=test.app.bplplus.demo.registration.bpl
+# and log in as _SYSTEM / SYS.
+services:
+  iris:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "9091:1972"
+      - "9092:52773"
