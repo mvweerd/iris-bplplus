@@ -189,6 +189,43 @@ Method TestExampleWriteLetter()
 	Do $$$AssertEquals(tResp.StringValue, "Dear Jan,"_$Char(10, 10)_"Thank you for registering."_$Char(10, 10)_"Kind regards,"_$Char(10)_"The registration desk")
 }
 
+/// The example receiveOrder gives the HTTP message it gets to checkOrder, which
+/// is not in the production, and answers with what checkOrder found: 202 for a
+/// good order, the error of checkOrder otherwise.
+Method TestExampleReceiveOrder()
+{
+	Set tOrder = "{""orderId"": ""A-1001"", ""lines"": [{""sku"": ""PEN-01"", ""quantity"": 3, ""price"": 1.25}, {""sku"": ""PAD-02"", ""quantity"": 1, ""price"": 4.5}]}"
+	Do ..SendOrder("POST", "application/json; charset=utf-8", tOrder, .tStatus, .tBody)
+	Do $$$AssertEquals(tStatus, "HTTP/1.1 202 Accepted")
+	Do $$$AssertEquals(tBody, "{""orderId"":""A-1001"",""lines"":2,""total"":8.25,""status"":""accepted""}")
+	Do ..SendOrder("GET", "application/json", tOrder, .tStatus, .tBody)
+	Do $$$AssertEquals(tStatus, "HTTP/1.1 405 Method Not Allowed")
+	Do ..SendOrder("POST", "text/plain", tOrder, .tStatus, .tBody)
+	Do $$$AssertEquals(tStatus, "HTTP/1.1 415 Unsupported Media Type")
+	Do ..SendOrder("POST", "application/json", "{not json", .tStatus, .tBody)
+	Do $$$AssertEquals(tStatus, "HTTP/1.1 400 Bad Request")
+	Do ..SendOrder("POST", "application/json", "{""orderId"": ""A-1002"", ""lines"": [{""sku"": ""PEN-01"", ""quantity"": 0, ""price"": 1}]}", .tStatus, .tBody)
+	Do $$$AssertEquals(tStatus, "HTTP/1.1 422 Unprocessable Content")
+	Do $$$AssertEquals(tBody, "{""error"":""line 1: quantity has to be a whole number of 1 or more""}")
+}
+
+/// Sends an order to Example receive order the way EnsLib.HTTP.GenericService
+/// would, and returns the status line and body of the answer.
+Method SendOrder(pMethod As %String, pContentType As %String, pBody As %String, Output pStatus As %String, Output pAnswer As %String)
+{
+	Set (pStatus, pAnswer) = ""
+	Set tStream = ##class(%Stream.GlobalCharacter).%New()
+	Do tStream.Write(pBody)
+	Set tReq = ##class(EnsLib.HTTP.GenericMessage).%New(tStream)
+	Do tReq.HTTPHeaders.SetAt(pMethod, "HttpRequest")
+	Do tReq.HTTPHeaders.SetAt(pContentType, "Content-Type")
+	Do $$$AssertStatusOK(##class(EnsLib.Testing.Service).SendTestRequest("Example receive order", tReq, .tResp, , 1))
+	If '$IsObject($Get(tResp)) Quit
+	Set pStatus = tResp.HTTPHeaders.GetAt("StatusLine")
+	Do tResp.Stream.Rewind()
+	Set pAnswer = tResp.Stream.Read(32000)
+}
+
 /// Number of notifications Send notification logged in the session.
 Method CountNotifications(pSession As %String) As %Integer
 {

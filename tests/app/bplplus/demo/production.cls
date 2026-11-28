@@ -34,6 +34,8 @@ XData ProductionDefinition
   </Item>
   <Item Name="Example write letter" Category="Examples" ClassName="app.bplplus.examples.writeLetter" PoolSize="1" Enabled="true" Foreground="false" Comment="The example of Call process with a stream: has app.bplplus.examples.signLetter, not in the production, sign a letter" LogTraceEvents="false" Schedule="">
   </Item>
+  <Item Name="Example receive order" Category="Examples" ClassName="app.bplplus.examples.receiveOrder" PoolSize="1" Enabled="true" Foreground="false" Comment="The example of Call process with a message: has app.bplplus.examples.checkOrder check an order that came in over HTTP" LogTraceEvents="false" Schedule="">
+  </Item>
   <Item Name="Demo Normalize phone (ObjectScript)" Category="Examples" ClassName="test.app.bplplus.demo.normalizePhoneObjectScript" PoolSize="1" Enabled="true" Foreground="false" Comment="The same activity in ObjectScript, to compare with the Python one" LogTraceEvents="false" Schedule="">
   </Item>
 </Production>

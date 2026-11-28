@@ -122,33 +122,44 @@ production (see Trying it out).
 | *Fuzzy match* | The candidate most like a value, using Python's `difflib` |
 | *Normalize phone (Python)* | `06-12345678` becomes `+31612345678`. Written as a plain Python module |
 | *Normalize phone (ObjectScript)* | The same activity as an ObjectScript class, so you can compare the two. A test checks that they give the same answers |
-| *Call process* | Runs another BPL process with an object of this one, by default the context, as its request. The process called reads and writes that object itself (see below) |
+| *Call process* | Runs another BPL process with an object of this one, by default the context, or a message as its request. The process called reads and writes that object itself, and its response comes back as a result (see below) |
 | `registerContact`, `cleanContact`, `contact` | Example processes: `registerContact` gives `cleanContact` its `context.contact` to clean up, with *Call process* (see below) |
 | `writeLetter`, `signLetter` | Example processes: `writeLetter` gives `signLetter` its `context.letter`, a stream, to sign, with *Call process* (see below) |
+| `receiveOrder`, `checkOrder` | Example processes: `receiveOrder` gives `checkOrder` the HTTP message of an order to check, and gets its HTTP answer back, with *Call process* (see below) |
 
-## Calling another process with the context
+## Calling another process
 
 *Call process* runs another BPL process inside the process it is in. It works
 like `aux` on `<transform>`: you give it an object, **Aux**, and the process
 called gets that object as its `request`, by reference. What that process writes
-in `request` is written in the object of the caller, so there is nothing to send
-back. Aux is `context` unless you give less, such as `context.contact`.
+in `request` is written in the object of the caller. Aux is `context` unless you
+give less, such as `context.contact`, or a message, such as `request`. When the
+process called has a response, *Call process* gives it back as the result
+**Response**.
 
 | Parameter | What it is |
 |---|---|
 | **Target** | The BPL process to run. Pick it with the magnifier, which lists the processes that can be called |
 | **Aux** | The object the process called gets as its `request`. By default `context` |
 
-A process that can be called is an ordinary BPL process whose request class is
-not a message (not persistent). Make it the class of what you give as Aux:
+| Result | What it is |
+|---|---|
+| **Response** | The response of the process called, such as an `Ens.StringResponse`. Empty when it has no response class |
+| **Success**, **ResultText** | As for every activity: 1, and which process ran |
+
+A process that can be called is any BPL process of your own (the magnifier
+leaves out those of IRIS). Its request class is the class of what you give as
+Aux:
 
 - a class of your own, such as a serial class with the fields it works on. The
   designer then knows the fields of `request`;
 - a stream class such as `%Stream.Object`, to work on a stream of the caller;
 - `%Library.RegisteredObject`, to take any object, such as the whole context of
-  the caller. `request.Name` is then the caller's `context.Name`.
+  the caller. `request.Name` is then the caller's `context.Name`;
+- a message, such as an `Ens.Request` or an `EnsLib.HTTP.GenericMessage`. Then
+  the same process also works as an item of a production.
 
-The process called is **not an item of the production**. It runs in the job of
+The process called does **not have to be an item of the production**. It runs in the job of
 the calling process, under that process's name and settings, through the BPL
 engine's own `OnRequest`, as the production would run it. No messages are sent
 and nothing of it is stored.
@@ -160,6 +171,12 @@ Things to know:
   process* fail. Code, assigns, rules, transformations and custom activities
   work.
 - Its trace and log entries carry the name of the calling item, as it runs there.
+- Store **Response** in a context property of the response class of the process
+  called, not of `%RegisteredObject`, which the designer adds by default. Only
+  then is it kept when the calling process waits.
+- A message in a context property is stored with the context. Clear the
+  property (`Set context.check = ""`) once you are done with it, or the message
+  table keeps rows that no message header points to.
 - When the process called is given an object that is not of its request class,
   *Call process* fails before it runs, and says which class it expects.
 
@@ -202,6 +219,47 @@ The same works with a stream. Two more example processes show it:
 
 The stream is not copied: `signLetter` writes in the caller's stream itself.
 The demo production has it as *Example write letter*.
+
+### The example: an order over HTTP checked by another process
+
+A message works too. These two example processes take an order that comes in
+over HTTP:
+
+- `checkOrder` is the process to call. Its request and response are both
+  `EnsLib.HTTP.GenericMessage`, as an `EnsLib.HTTP.GenericService` sends and
+  expects them. It reads the method and `Content-Type` from `request.HTTPHeaders`
+  and the JSON order from `request.Stream`, such as:
+
+  ```json
+  {"orderId": "A-1001", "lines": [{"sku": "PEN-01", "quantity": 3, "price": 1.25},
+                                  {"sku": "PAD-02", "quantity": 1, "price": 4.5}]}
+  ```
+
+  It answers `200 OK` with `{"orderId":"A-1001","lines":2,"total":8.25}`. If the
+  order is wrong, the answer is one of these, with `{"error": "..."}`:
+
+  | Status | When |
+  |---|---|
+  | `405 Method Not Allowed` | The method is not POST |
+  | `415 Unsupported Media Type` | `Content-Type` is not `application/json` |
+  | `400 Bad Request` | The body is not a JSON object |
+  | `422 Unprocessable Content` | A field is missing or wrong |
+
+  The status goes in the `StatusLine` header, which the HTTP service uses as the
+  status of its answer.
+- `receiveOrder` calls it. It runs `checkOrder` with *Call process*, with
+  `request`, the HTTP message itself, as Aux, and stores **Response** in
+  `context.check`. For a good order it logs it and answers
+  `202 Accepted` with `"status":"accepted"` added. Otherwise it passes on the
+  status and error of `checkOrder`.
+
+To try it over HTTP, add an `EnsLib.HTTP.GenericService` to a production with
+`receiveOrder` as its target, and POST the order to it with
+`Content-Type: application/json`. The demo production has *Example receive
+order*, and its test sends the order the way the service would.
+
+`checkOrder` is not in the demo production, but because it takes and gives
+messages, you can also put it in a production of its own.
 
 The demo production also has *Demo Call process*, which gives its whole context
 to `test.app.bplplus.demo.callee`. That process has `%Library.RegisteredObject`

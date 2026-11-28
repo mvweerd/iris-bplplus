@@ -72,7 +72,7 @@ Method TestDesignerDefaults()
 }
 
 /// Call process: Target has a magnifier, whose context search lists the demo
-/// callee and no process that cannot be called. Only parameters of activities
+/// callee and no process of IRIS. Only parameters of activities
 /// with a context search give choices.
 Method TestLookup()
 {
@@ -81,6 +81,8 @@ Method TestLookup()
 	While tIter.%GetNext(.k, .tInput) { Set tInputs(tInput.name) = tInput }
 	Do $$$AssertEquals(tInputs("Target").lookup, 1)
 	Do $$$AssertEquals(tInputs("Aux").default, "context", "the whole context, unless you give less")
+	Do $$$AssertEquals(tEntry.resultClass, "app.bplplus.call.callProcessResult")
+	Do $$$AssertTrue(tEntry.outputs.%ToJSON() [ """name"":""Response""", "the response of the process called is a result")
 	Set tOther = ##class(app.bplplus.catalog).Describe("app.bplplus.examples.sendNotification").inputs.%Get(0)
 	Do $$$AssertNotTrue(tOther.%IsDefined("lookup"), "no magnifier on an ordinary parameter")
 
@@ -88,7 +90,7 @@ Method TestLookup()
 	Do $$$AssertTrue(tChoices.caption [ "BPL processes", tChoices.caption)
 	Set tAll = tChoices.top.%ToJSON()_tChoices.other.%ToJSON()
 	Do $$$AssertTrue(tAll [ """test.app.bplplus.demo.callee""", tAll)
-	Do $$$AssertNotTrue(tAll [ "validateValue", "a process that cannot be called is not listed")
+	Do $$$AssertNotTrue(tAll [ "EnsLib.", "a process of IRIS is not listed")
 
 	Do $$$AssertEquals(##class(app.bplplus.catalog).Choices("app.bplplus.examples.sendNotification", "Recipient").top.%Size(), 0, "no magnifier, no choices")
 	Do $$$AssertEquals(##class(app.bplplus.catalog).Choices("%Library.String", "Target").top.%Size(), 0, "not an activity")
