@@ -45,6 +45,7 @@ SRC_FILES = [
     "src/cls/app/bplplus/catalog.cls",
     "src/cls/app/bplplus/editorCore.cls",
     "src/cls/app/bplplus/call/search.cls",
+    "src/cls/app/bplplus/call/callProcessResult.cls",
     "src/cls/app/bplplus/call/callProcess.cls",
     "src/cls/app/bplplus/classic/editor.cls",
     "src/cls/app/bplplus/classic/redirect.cls",
@@ -66,6 +67,8 @@ SRC_FILES = [
     "src/cls/app/bplplus/examples/registerContact.cls",
     "src/cls/app/bplplus/examples/signLetter.cls",
     "src/cls/app/bplplus/examples/writeLetter.cls",
+    "src/cls/app/bplplus/examples/checkOrder.cls",
+    "src/cls/app/bplplus/examples/receiveOrder.cls",
 ]
 
 TEST_FILES = [

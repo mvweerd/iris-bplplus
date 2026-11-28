@@ -4,23 +4,25 @@
 Class test.app.bplplus.callTest Extends %UnitTest.TestCase
 {
 
-/// The demo callee and the example cleanContact can be called; a process that
-/// takes messages, or a class that is not a process, cannot, and the reason
-/// says why.
+/// The demo callee, the examples and a process that takes messages can be
+/// called; a process of IRIS itself, or a class that is not a process, cannot,
+/// and the reason says why.
 Method TestCanBeCalled()
 {
 	Do $$$AssertTrue(##class(app.bplplus.call.callProcess).CanBeCalled("test.app.bplplus.demo.callee", .tReason), tReason)
 	Do $$$AssertTrue(##class(app.bplplus.call.callProcess).CanBeCalled("app.bplplus.examples.cleanContact", .tReason), tReason)
 	Do $$$AssertTrue(##class(app.bplplus.call.callProcess).CanBeCalled("app.bplplus.examples.signLetter", .tReason), tReason)
-	Do $$$AssertNotTrue(##class(app.bplplus.call.callProcess).CanBeCalled("test.app.bplplus.demo.validateValue", .tReason))
-	Do $$$AssertTrue(tReason [ "a message", tReason)
+	Do $$$AssertTrue(##class(app.bplplus.call.callProcess).CanBeCalled("app.bplplus.examples.checkOrder", .tReason), tReason)
+	Do $$$AssertTrue(##class(app.bplplus.call.callProcess).CanBeCalled("test.app.bplplus.demo.validateValue", .tReason), tReason)
+	Do $$$AssertNotTrue(##class(app.bplplus.call.callProcess).CanBeCalled("EnsLib.Printing.Dispatcher", .tReason))
+	Do $$$AssertTrue(tReason [ "of IRIS itself", tReason)
 	Do $$$AssertNotTrue(##class(app.bplplus.call.callProcess).CanBeCalled("test.app.bplplus.demo.response", .tReason))
 	Do $$$AssertTrue(tReason [ "not a BPL process", tReason)
 	Do $$$AssertNotTrue(##class(app.bplplus.call.callProcess).CanBeCalled("No.Such.Class", .tReason))
 }
 
-/// The search behind the magnifier lists only the BPL processes that can be
-/// called: the callee and cleanContact, not the other demo processes or those of
+/// The search behind the magnifier lists the BPL processes that can be called:
+/// the callee and the examples, also those that take messages, but not those of
 /// IRIS.
 Method TestSearch()
 {
@@ -29,8 +31,8 @@ Method TestSearch()
 	Do $$$AssertTrue($Data(tAll("test.app.bplplus.demo.callee")), "the callee is listed")
 	Do $$$AssertTrue($Data(tAll("app.bplplus.examples.cleanContact")), "the example is listed")
 	Do $$$AssertTrue($Data(tAll("app.bplplus.examples.signLetter")), "so is the one that takes a stream")
-	Do $$$AssertNotTrue($Data(tAll("test.app.bplplus.demo.validateValue")), "a process that takes messages is not")
-	Do $$$AssertNotTrue($Data(tAll("EnsLib.Printing.Dispatcher")), "nor one of IRIS")
+	Do $$$AssertTrue($Data(tAll("app.bplplus.examples.checkOrder")), "and the one that takes an HTTP message")
+	Do $$$AssertNotTrue($Data(tAll("EnsLib.Printing.Dispatcher")), "not one of IRIS")
 }
 
 /// Outside a business process, or without Target or Aux, Call process fails

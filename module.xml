@@ -46,13 +46,16 @@
         app.bplplus.examples.sendNotification   - example activity: notification to the Event Log
         app.bplplus.examples.validateValue      - example activity: regular expression check
       Calling another BPL process with the context (app.bplplus.call):
-        app.bplplus.call.callProcess            - activity: runs a BPL process in this one, with Aux (by default the context) as its request, by reference
+        app.bplplus.call.callProcess            - activity: runs a BPL process in this one, with Aux (by default the context) as its request, by reference; its response comes back as a result
+        app.bplplus.call.callProcessResult      - result of Call process: Success, ResultText and the Response of the process called
         app.bplplus.call.search                 - the context search behind the magnifier of Call process's Target
         app.bplplus.examples.cleanContact       - example process that Call process calls: cleans up the contact it gets as its request
         app.bplplus.examples.registerContact    - example process that has cleanContact clean up its context.contact with Call process
         app.bplplus.examples.contact            - the contact the two example processes share
         app.bplplus.examples.signLetter         - example process that Call process calls with a stream: signs the letter it gets as its request
         app.bplplus.examples.writeLetter        - example process that has signLetter sign its context.letter, a stream, with Call process
+        app.bplplus.examples.checkOrder         - example process that Call process calls with a message: checks an order that came in over HTTP
+        app.bplplus.examples.receiveOrder       - example process that has checkOrder check the HTTP message it gets, with Call process
       The classic (Zen) Business Process Designer (app.bplplus.classic):
         app.bplplus.classic.editor              - the designer page with custom activities
         app.bplplus.classic.redirect            - web application event class that makes that page the default designer
@@ -81,6 +84,7 @@
   <Resource Name="app.bplplus.examples.normalizePhoneResult.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.examples.sendNotification.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.examples.validateValue.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.call.callProcessResult.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.call.callProcess.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.call.search.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.examples.contact.CLS" Directory="src/cls"/>
@@ -88,6 +92,8 @@
   <Resource Name="app.bplplus.examples.registerContact.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.examples.signLetter.CLS" Directory="src/cls"/>
   <Resource Name="app.bplplus.examples.writeLetter.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.checkOrder.CLS" Directory="src/cls"/>
+  <Resource Name="app.bplplus.examples.receiveOrder.CLS" Directory="src/cls"/>
 
   <!--
     The Python side of activities written as plain Python classes: the
